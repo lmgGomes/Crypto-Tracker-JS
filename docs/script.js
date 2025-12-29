@@ -9,28 +9,25 @@ let cryptoChart = new Chart(ctx, {
                 label: 'Bitcoin (USD)',
                 data: [],
                 borderColor: '#3498db',
-                backgroundColor: 'rgba(52, 152, 219, 0.2)',
+                yAxisID: 'y', // Eixo da esquerda
                 borderWidth: 2,
-                tension: 0.4,
-                fill: true
+                fill: false
             },
             {
                 label: 'Ethereum (USD)',
                 data: [],
                 borderColor: '#9b59b6',
-                backgroundColor: 'rgba(155, 89, 182, 0.2)',
+                yAxisID: 'y1', // Eixo da direita
                 borderWidth: 2,
-                tension: 0.4,
-                fill: true
+                fill: false
             },
             {
                 label: 'Cardano (USD)',
                 data: [],
-                borderColor: '#2ecc71', // Cor verde para Cardano
-                backgroundColor: 'rgba(46, 204, 113, 0.2)',
+                borderColor: '#2ecc71',
+                yAxisID: 'y1', // Eixo da direita
                 borderWidth: 2,
-                tension: 0.4,
-                fill: true
+                fill: false
             }
         ]
     },
@@ -39,8 +36,17 @@ let cryptoChart = new Chart(ctx, {
         maintainAspectRatio: false,
         scales: {
             y: {
-                beginAtZero: false,
-                title: { display: true, text: 'Preço em USD' }
+                type: 'linear',
+                display: true,
+                position: 'left',
+                title: { display: true, text: 'BTC Price' }
+            },
+            y1: {
+                type: 'linear',
+                display: true,
+                position: 'right',
+                title: { display: true, text: 'ETH/ADA Price' },
+                grid: { drawOnChartArea: false } // Não poluir o gráfico
             }
         }
     }
@@ -51,7 +57,7 @@ async function updatePrices() {
         const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,cardano&vs_currencies=usd');
         const data = await response.json();
 
-        // Atualiza os cards no topo
+        // Atualiza os textos dos cards
         document.getElementById('btc-price').innerText = `$ ${data.bitcoin.usd.toLocaleString()}`;
         document.getElementById('eth-price').innerText = `$ ${data.ethereum.usd.toLocaleString()}`;
         document.getElementById('ada-price').innerText = `$ ${data.cardano.usd.toLocaleString()}`;
@@ -59,28 +65,21 @@ async function updatePrices() {
         const now = new Date();
         const timeLabel = now.getHours() + ":" + String(now.getMinutes()).padStart(2, '0') + ":" + String(now.getSeconds()).padStart(2, '0');
 
-        // Adiciona o novo horário
         cryptoChart.data.labels.push(timeLabel);
+        cryptoChart.data.datasets[0].data.push(data.bitcoin.usd);
+        cryptoChart.data.datasets[1].data.push(data.ethereum.usd);
+        cryptoChart.data.datasets[2].data.push(data.cardano.usd);
 
-        // Adiciona os dados de cada moeda no seu respectivo dataset
-        cryptoChart.data.datasets[0].data.push(data.bitcoin.usd);  // Bitcoin
-        cryptoChart.data.datasets[1].data.push(data.ethereum.usd); // Ethereum
-        cryptoChart.data.datasets[2].data.push(data.cardano.usd);  // Cardano
-
-        // Mantém apenas os últimos 10 registros
         if (cryptoChart.data.labels.length > 10) {
             cryptoChart.data.labels.shift();
-            cryptoChart.data.datasets[0].data.shift();
-            cryptoChart.data.datasets[1].data.shift();
-            cryptoChart.data.datasets[2].data.shift();
+            cryptoChart.data.datasets.forEach(dataset => dataset.data.shift());
         }
 
         cryptoChart.update();
     } catch (error) {
-        console.error("Erro ao buscar dados:", error);
+        console.error("Erro:", error);
     }
 }
 
-// Atualiza a cada 10 segundos
 setInterval(updatePrices, 10000);
 updatePrices();
