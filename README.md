@@ -2,7 +2,7 @@
 
 Um dashboard interativo que monitora preços de criptomoedas em tempo real consumindo a API da CoinGecko. O projeto inclui gráficos dinâmicos que se atualizam automaticamente sem recarregar a página.
 
----
+--- 
 
 ## 🚀 Demonstração ao Vivo
 Você pode visualizar este projeto funcionando agora mesmo através do link abaixo:
