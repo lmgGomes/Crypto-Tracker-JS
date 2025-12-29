@@ -1,23 +1,48 @@
-// 1. Corrigido para bater com o ID 'cryptoChart' do seu HTML
 const ctx = document.getElementById('cryptoChart').getContext('2d');
 
 let cryptoChart = new Chart(ctx, {
     type: 'line',
     data: {
         labels: [],
-        datasets: [{
-            label: 'Bitcoin (USD)',
-            data: [],
-            borderColor: '#3498db',
-            backgroundColor: 'rgba(52, 152, 219, 0.2)',
-            borderWidth: 2,
-            tension: 0.4,
-            fill: true
-        }]
+        datasets: [
+            {
+                label: 'Bitcoin (USD)',
+                data: [],
+                borderColor: '#3498db',
+                backgroundColor: 'rgba(52, 152, 219, 0.2)',
+                borderWidth: 2,
+                tension: 0.4,
+                fill: true
+            },
+            {
+                label: 'Ethereum (USD)',
+                data: [],
+                borderColor: '#9b59b6',
+                backgroundColor: 'rgba(155, 89, 182, 0.2)',
+                borderWidth: 2,
+                tension: 0.4,
+                fill: true
+            },
+            {
+                label: 'Cardano (USD)',
+                data: [],
+                borderColor: '#2ecc71', // Cor verde para Cardano
+                backgroundColor: 'rgba(46, 204, 113, 0.2)',
+                borderWidth: 2,
+                tension: 0.4,
+                fill: true
+            }
+        ]
     },
     options: {
         responsive: true,
-        maintainAspectRatio: false
+        maintainAspectRatio: false,
+        scales: {
+            y: {
+                beginAtZero: false,
+                title: { display: true, text: 'Preço em USD' }
+            }
+        }
     }
 });
 
@@ -26,27 +51,33 @@ async function updatePrices() {
         const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,cardano&vs_currencies=usd');
         const data = await response.json();
 
-        // Atualiza os cards
+        // Atualiza os cards no topo
         document.getElementById('btc-price').innerText = `$ ${data.bitcoin.usd.toLocaleString()}`;
         document.getElementById('eth-price').innerText = `$ ${data.ethereum.usd.toLocaleString()}`;
         document.getElementById('ada-price').innerText = `$ ${data.cardano.usd.toLocaleString()}`;
 
-        // 2. Corrigido o erro de hora que apareceu no seu console
         const now = new Date();
         const timeLabel = now.getHours() + ":" + String(now.getMinutes()).padStart(2, '0') + ":" + String(now.getSeconds()).padStart(2, '0');
 
-        // Adiciona ao gráfico
+        // Adiciona o novo horário
         cryptoChart.data.labels.push(timeLabel);
-        cryptoChart.data.datasets[0].data.push(data.bitcoin.usd);
 
+        // Adiciona os dados de cada moeda no seu respectivo dataset
+        cryptoChart.data.datasets[0].data.push(data.bitcoin.usd);  // Bitcoin
+        cryptoChart.data.datasets[1].data.push(data.ethereum.usd); // Ethereum
+        cryptoChart.data.datasets[2].data.push(data.cardano.usd);  // Cardano
+
+        // Mantém apenas os últimos 10 registros
         if (cryptoChart.data.labels.length > 10) {
             cryptoChart.data.labels.shift();
             cryptoChart.data.datasets[0].data.shift();
+            cryptoChart.data.datasets[1].data.shift();
+            cryptoChart.data.datasets[2].data.shift();
         }
 
         cryptoChart.update();
     } catch (error) {
-        console.error("Erro ao atualizar:", error);
+        console.error("Erro ao buscar dados:", error);
     }
 }
 
