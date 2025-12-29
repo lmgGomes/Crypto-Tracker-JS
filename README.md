@@ -1,6 +1,7 @@
 # 📊 Crypto Tracker Pro - Live Dashboard
 
-![Dashboard Preview](docs/screenshot.png)
+<img width="1600" height="772" alt="image" src="https://github.com/user-attachments/assets/831287bd-352d-4f92-83c8-408b6d6492de" />
+
 
 Um dashboard interativo que monitora preços de criptomoedas em tempo real consumindo a API da CoinGecko. O projeto inclui gráficos dinâmicos que se atualizam automaticamente sem recarregar a página.
 
