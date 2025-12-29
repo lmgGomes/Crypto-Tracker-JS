@@ -1,65 +1,45 @@
-let priceHistory = [];
-let timeLabels = [];
-let myChart;
-
-// Inicia o gráfico vazio
 const ctx = document.getElementById('cryptoChart').getContext('2d');
-myChart = new Chart(ctx, {
+let cryptoChart = new Chart(ctx, {
     type: 'line',
     data: {
-        labels: timeLabels,
+        labels: [],
         datasets: [{
-            label: 'Bitcoin (USD)',
-            data: priceHistory,
-            borderColor: '#38bdf8',
-            backgroundColor: 'rgba(56, 189, 248, 0.2)',
+            label: 'Bitcoin Price (USD)',
+            data: [],
+            borderColor: '#3498db',
             borderWidth: 2,
-            tension: 0.4,
-            fill: true
+            fill: false
         }]
     },
     options: {
         responsive: true,
-        plugins: { legend: { display: false } },
-        scales: {
-            x: { grid: { display: false }, ticks: { color: '#64748b' } },
-            y: { grid: { color: '#334155' }, ticks: { color: '#64748b' } }
-        }
+        maintainAspectRatio: false
     }
 });
 
-async function updateDashboard() {
+async function updatePrices() {
     try {
         const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,cardano&vs_currencies=usd');
         const data = await response.json();
 
-        // Valores atuais
-        const btc = data.bitcoin.usd;
-        const eth = data.ethereum.usd;
-        const ada = data.cardano.usd;
+        document.getElementById('btc-price').innerText = `$ ${data.bitcoin.usd.toLocaleString()}`;
+        document.getElementById('eth-price').innerText = `$ ${data.ethereum.usd.toLocaleString()}`;
+        document.getElementById('ada-price').innerText = `$ ${data.cardano.usd.toLocaleString()}`;
 
-        // Atualiza textos
-        document.getElementById('btc-price').innerText = `$${btc.toLocaleString()}`;
-        document.getElementById('eth-price').innerText = `$${eth.toLocaleString()}`;
-        document.getElementById('ada-price').innerText = `$${ada.toLocaleString()}`;
+        const time = new Date().toLocaleTimeString();
+        cryptoChart.data.labels.push(time);
+        cryptoChart.data.datasets[0].data.push(data.bitcoin.usd);
 
-        // Atualiza Gráfico
-        const now = new Date().toLocaleTimeString([], { hour: '2min', minute: '2-digit' });
-        
-        if (priceHistory.length > 12) {
-            priceHistory.shift();
-            timeLabels.shift();
+        if (cryptoChart.data.labels.length > 10) {
+            cryptoChart.data.labels.shift();
+            cryptoChart.data.datasets[0].data.shift();
         }
 
-        priceHistory.push(btc);
-        timeLabels.push(now);
-        myChart.update();
-
+        cryptoChart.update();
     } catch (error) {
-        console.error("Erro ao buscar dados:", error);
+        console.error("Erro ao buscar preços:", error);
     }
 }
 
-// Atualiza a cada 10 segundos
-setInterval(updateDashboard, 10000);
-updateDashboard();
+setInterval(updatePrices, 10000);
+updatePrices();
