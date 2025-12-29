@@ -3,32 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crypto Tracker Live</title>
+    <title>Crypto Tracker Pro</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
     <div class="container">
-        <h1>📊 Live Crypto Tracker</h1>
+        <h1>📊 Live Crypto Dashboard</h1>
         
-        <div class="card">
-            <p>Bitcoin (BTC)</p>
-            <span id="btc-price">Carregando...</span>
+        <div class="cards-grid">
+            <div class="card">
+                <p>Bitcoin (BTC)</p>
+                <span id="btc-price">Carregando...</span>
+            </div>
+            <div class="card">
+                <p>Ethereum (ETH)</p>
+                <span id="eth-price">Carregando...</span>
+            </div>
+            <div class="card">
+                <p>Cardano (ADA)</p>
+                <span id="ada-price">Carregando...</span>
+            </div>
         </div>
 
-        <div class="card">
-            <p>Ethereum (ETH)</p>
-            <span id="eth-price">Carregando...</span>
+        <div class="chart-container">
+            <canvas id="cryptoChart"></canvas>
         </div>
 
-        <div class="card">
-            <p>Cardano (ADA)</p>
-            <span id="ada-price">Carregando...</span>
-        </div>
-
-        <p style="margin-top: 20px; font-size: 0.8rem; color: #94a3b8;">
-            Atualiza automaticamente a cada 10 segundos
-        </p>
+        <p class="footer-text">Atualiza automaticamente a cada 10 segundos</p>
     </div>
 
     <script src="script.js"></script>
